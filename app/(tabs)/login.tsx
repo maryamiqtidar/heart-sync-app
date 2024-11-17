@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,33 +6,51 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  ImageSourcePropType,
-} from 'react-native';
-
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+  Alert,
+} from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../scripts/firebaseConfig"; // Ensure the correct path
 
 type LoginScreenProps = {
   navigation: NativeStackNavigationProp<any, any>;
 };
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+  const [email, setEmail] = useState(""); // Added state for email
+  const [password, setPassword] = useState(""); // Added state for password
+
+  // Handle Login with Firebase Authentication
+  const handleLogin = async () => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      Alert.alert("Success", `Welcome back, ${userCredential.user.email}!`);
+      navigation.navigate("HomeScreen"); // Replace with your home screen
+    } catch (error: any) {
+      Alert.alert("Login Error", error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Heartbeat image */}
       <Image
-        source={require('./images/heartbeat.png') as ImageSourcePropType}
+        source={require("./images/heartbeat.png")}
         style={styles.ecgImage}
       />
       {/* Title */}
-      <Text style={styles.title}>HEART{'\n'}SYNC</Text>
+      <Text style={styles.title}>HEART{"\n"}SYNC</Text>
       {/* Subtitle */}
       <Text style={styles.subtitle}>Detect electrolyte imbalances</Text>
 
-      {/* Username Input */}
+      {/* Email Input */}
       <TextInput
         style={styles.input}
-        placeholder="Username"
+        placeholder="Email"
         placeholderTextColor="#A9A9A9"
+        value={email}
+        onChangeText={setEmail} // Bind email input
+        keyboardType="email-address"
       />
 
       {/* Password Input */}
@@ -40,33 +58,30 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         style={styles.input}
         placeholder="Password"
         placeholderTextColor="#A9A9A9"
+        value={password}
+        onChangeText={setPassword} // Bind password input
         secureTextEntry
       />
 
-      {/* Forgot Password */}
-      <TouchableOpacity>
-        <Text style={styles.forgotPassword}>Forgot Password?</Text>
-      </TouchableOpacity>
+      {/* Login Button */}
+     {/* Login Button */}
+<TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
+  <Text style={styles.signInButtonText}>Login</Text>
+</TouchableOpacity>
 
-      {/* Sign In Button */}
-      <TouchableOpacity
-        style={styles.signInButton}
-        onPress={() => navigation.navigate('profile')}
-      >
-        <Text style={styles.signInButtonText}>Sign In</Text>
-      </TouchableOpacity>
 
-      {/* Sign Up Section */}
-      <View style={styles.signUpSection}>
-        <Text style={styles.signUpText}>Create an account </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('signup')}>
-          <Text style={styles.signUpLink}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Sign Up Navigation */}
+      {/* Sign Up Navigation */}
+<View style={styles.signUpSection}>
+  <Text style={styles.signUpText}>Don't have an account?</Text>
+  <TouchableOpacity onPress={() => navigation.navigate("SignUpScreen")}>
+    <Text style={styles.signUpLink}>Sign up</Text>
+  </TouchableOpacity>
+</View>
+
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
