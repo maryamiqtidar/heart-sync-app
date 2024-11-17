@@ -1,9 +1,59 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect } from "react";
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { auth } from "../../scripts/firebaseConfig"; // Ensure the correct path
+import { onAuthStateChanged } from "firebase/auth";
 
-const InstructionsScreen = () => {
-  const navigation = useNavigation();
+type InstructionsScreenProps = {
+  navigation: NativeStackNavigationProp<any, any>;
+};
+
+const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ navigation }) => {
+  // Function to trigger the API
+  const triggerCheckElectrolytes = async () => {
+    const user = auth.currentUser;
+
+    if (!user) {
+      Alert.alert("Error", "User not authenticated. Please log in again.");
+      navigation.navigate("LoginScreen");
+      return;
+    }
+
+    const userId = user.uid; // Retrieve the UID from Firebase Authentication
+    const apiUrl = "https://cupnd89ium.us-east-1.awsapprunner.com/trigger";
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: userId, // Send user_id in the request body
+        }),
+      });
+
+      if (response.ok) {
+        Alert.alert("Success", "Check Electrolytes triggered successfully!");
+      } else {
+        const errorData = await response.json();
+        Alert.alert("Error", `Failed to trigger: ${errorData.message}`);
+      }
+    } catch (error: any) {
+      Alert.alert("Error", `Failed to trigger API: ${error.message}`);
+    }
+  };
+  // Authorization: Ensure only authenticated users access this screen
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Redirect to LoginScreen if the user is not authenticated
+        navigation.navigate("LoginScreen");
+      }
+    });
+
+    return unsubscribe; // Cleanup subscription on unmount
+  }, [navigation]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -11,15 +61,15 @@ const InstructionsScreen = () => {
       <View style={styles.header}>
         {/* Back Button on the Left */}
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Image source={require('./images/back.png')} style={styles.backIcon} />
+          <Image source={require("./images/back.png")} style={styles.backIcon} />
         </TouchableOpacity>
 
         {/* Title in the center */}
-        <Text style={styles.title}>Electrolytes Imabalance</Text>
+        <Text style={styles.title}>Electrolytes Imbalance</Text>
 
         {/* Dropdown Button on the Right */}
-        <TouchableOpacity onPress={() => {/* Add dropdown functionality here */}} style={styles.dropdownButton}>
-          <Image source={require('./images/user.png')} style={styles.dropdown} />
+        <TouchableOpacity onPress={() => { /* Add dropdown functionality here */ }} style={styles.dropdownButton}>
+          <Image source={require("./images/user.png")} style={styles.dropdown} />
         </TouchableOpacity>
       </View>
 
@@ -48,9 +98,9 @@ const InstructionsScreen = () => {
 
       <Text style={styles.warningText}>Stay Still during Recording.</Text>
 
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Check Electrolytes</Text>
-      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={triggerCheckElectrolytes}>
+          <Text style={styles.buttonText}>Check Electrolytes</Text>
+        </TouchableOpacity>
 
       {/* Footer */}
       <View style={styles.footer}>
