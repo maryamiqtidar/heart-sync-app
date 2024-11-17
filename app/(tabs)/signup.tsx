@@ -1,7 +1,22 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../scripts/firebaseConfig'; // Adjust path if needed
 
 const SignUpScreen = () => {
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSignUp = async () => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      Alert.alert('Success', `User registered: ${userCredential.user.email}`);
+    } catch (error: any) {
+      Alert.alert('Error', error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image
@@ -11,16 +26,37 @@ const SignUpScreen = () => {
       <Text style={styles.title}>HEART SYNC</Text>
       <Text style={styles.subtitle}>Detect electrolyte imbalances</Text>
 
-      <TextInput style={styles.input} placeholder="Username" placeholderTextColor="#AAA" />
-      <TextInput style={styles.input} placeholder="Email" placeholderTextColor="#AAA" keyboardType="email-address" />
-      <TextInput style={styles.input} placeholder="Password" placeholderTextColor="#AAA" secureTextEntry={true} />
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        placeholderTextColor="#AAA"
+        value={username}
+        onChangeText={setUsername}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        placeholderTextColor="#AAA"
+        keyboardType="email-address"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        placeholderTextColor="#AAA"
+        secureTextEntry={true}
+        value={password}
+        onChangeText={setPassword}
+      />
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>Create an account</Text>
       </TouchableOpacity>
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
     container: {
