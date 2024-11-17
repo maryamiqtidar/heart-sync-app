@@ -1,16 +1,30 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useEffect } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { auth } from "../../scripts/firebaseConfig"; // Ensure the path is correct
+import { onAuthStateChanged } from "firebase/auth";
 
 type ProfileScreenProps = {
   navigation: NativeStackNavigationProp<any, any>;
 };
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
+  // Check Authentication State
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Redirect to LoginScreen if the user is not authenticated
+        navigation.navigate("LoginScreen");
+      }
+    });
+
+    return unsubscribe; // Cleanup the subscription on component unmount
+  }, [navigation]);
+
   return (
     <View style={styles.container}>
       <Image
-        source={require('./images/heartbeat.png')}
+        source={require("./images/heartbeat.png")}
         style={styles.ecgImage}
       />
       <Text style={styles.title}>Electrolytes Imbalance</Text>
@@ -18,8 +32,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
 
       <Text style={styles.sectionTitle}>Details</Text>
       <Text style={styles.detailsText}>
-        HeartSync provides the detection of electrolyte imbalances through ECG data analysis. Stay informed about your
-        potassium, calcium, and magnesium levels for optimal health.
+        HeartSync provides the detection of electrolyte imbalances through ECG
+        data analysis. Stay informed about your potassium, calcium, and magnesium levels
+        for optimal health.
       </Text>
 
       <TouchableOpacity style={styles.button}>
