@@ -14,7 +14,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         // Redirect to LoginScreen if the user is not authenticated
-        navigation.navigate("LoginScreen");
+        navigation.navigate("Login");
       }
     });
 
@@ -44,12 +44,15 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
       {/* Footer */}
       <View style={styles.footer}>
         {/* Left Button - Navigate to History Screen */}
-        <TouchableOpacity onPress={() => navigation.navigate('history')}>
+        <TouchableOpacity onPress={() => navigation.navigate('History')}>
           <Image source={require('./images/history.png')} style={styles.icon}  />
         </TouchableOpacity>
 
         {/* Right Button - Navigate to Welcome Screen */}
-        <TouchableOpacity onPress={() => navigation.navigate('welcome')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Welcome')}>
+          <Image source={require('./images/logout.png')} style={styles.icon} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Imbalance')}>
           <Image source={require('./images/logout.png')} style={styles.icon} />
         </TouchableOpacity>
       </View>

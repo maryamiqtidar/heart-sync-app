@@ -48,7 +48,7 @@ const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ navigation }) =
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         // Redirect to LoginScreen if the user is not authenticated
-        navigation.navigate("LoginScreen");
+        navigation.navigate("Login");
       }
     });
 

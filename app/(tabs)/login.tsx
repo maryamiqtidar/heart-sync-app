@@ -8,6 +8,7 @@ import {
   Image,
   Alert,
 } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../scripts/firebaseConfig"; // Ensure the correct path
@@ -17,6 +18,7 @@ type LoginScreenProps = {
 };
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+  // const navigation = useNavigation();
   const [email, setEmail] = useState(""); // Added state for email
   const [password, setPassword] = useState(""); // Added state for password
 
@@ -25,11 +27,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       Alert.alert("Success", `Welcome back, ${userCredential.user.email}!`);
-      navigation.navigate("HomeScreen"); // Replace with your home screen
+      
+      // Navigate to ProfileScreen after successful login
+      navigation.navigate("ProfileScreen");
     } catch (error: any) {
       Alert.alert("Login Error", error.message);
     }
   };
+  
 
   return (
     <View style={styles.container}>
@@ -65,16 +70,17 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
       {/* Login Button */}
      {/* Login Button */}
-<TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
+     <TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
   <Text style={styles.signInButtonText}>Login</Text>
 </TouchableOpacity>
+
 
 
       {/* Sign Up Navigation */}
       {/* Sign Up Navigation */}
 <View style={styles.signUpSection}>
   <Text style={styles.signUpText}>Don't have an account?</Text>
-  <TouchableOpacity onPress={() => navigation.navigate("SignUpScreen")}>
+  <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
     <Text style={styles.signUpLink}>Sign up</Text>
   </TouchableOpacity>
 </View>

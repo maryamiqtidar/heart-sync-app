@@ -12,7 +12,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
       <Text style={styles.title}>HEART{'\n'}SYNC</Text>
       <Text style={styles.subtitle}>Detect electrolyte imbalances{'\n'}with ECG data analysis</Text>
       <Image source={require('./images/heart.png') as ImageSourcePropType} style={styles.image} />
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('login')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>
     </View>
