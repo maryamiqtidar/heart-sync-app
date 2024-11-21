@@ -19,7 +19,7 @@ const AppNavigator = () => {
       <Stack.Screen name="Signup" component={SignUpScreen} />
       <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
       <Stack.Screen name="InstructionsScreen" component={InstructionsScreen} />
-      <Stack.Screen name="Imbalance" component={ElectrolytesImbalanceScreen} />
+      <Stack.Screen name="Imbalance" component={ElectrolytesImbalanceScreen}  initialParams={{ prediction: null }}/>
       <Stack.Screen name="History" component={HistoryScreen} />
       <Stack.Screen name="Health" component={HealthScreen} />
     </Stack.Navigator>

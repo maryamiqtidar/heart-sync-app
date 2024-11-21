@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { auth } from "../../scripts/firebaseConfig"; // Ensure the path is correct
-import { onAuthStateChanged } from "firebase/auth";
+
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 type ProfileScreenProps = {
   navigation: NativeStackNavigationProp<any, any>;
@@ -20,6 +21,15 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
 
     return unsubscribe; // Cleanup the subscription on component unmount
   }, [navigation]);
+    const handleLogout = async () => {
+      try {
+        await signOut(auth);
+        navigation.navigate("Welcome"); // Redirect to Welcome screen after logout
+      } catch (error) {
+        Alert.alert("Logout Failed", "An error occurred while logging out. Please try again.");
+        console.error("Logout Error: ", error);
+      }
+    };
 
   return (
     <View style={styles.container}>
@@ -37,7 +47,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
         for optimal health.
       </Text>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Health')}>
         <Text style={styles.buttonText}>Get details</Text>
       </TouchableOpacity>
 
@@ -47,13 +57,12 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate('History')}>
           <Image source={require('./images/history.png')} style={styles.icon}  />
         </TouchableOpacity>
-
         {/* Right Button - Navigate to Welcome Screen */}
-        <TouchableOpacity onPress={() => navigation.navigate('Welcome')}>
+        <TouchableOpacity onPress={handleLogout}>
           <Image source={require('./images/logout.png')} style={styles.icon} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Imbalance')}>
-          <Image source={require('./images/logout.png')} style={styles.icon} />
+          <Image source={require('./images/electrlytes.png')} style={styles.icon} />
         </TouchableOpacity>
       </View>
     </View>

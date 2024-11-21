@@ -1,8 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { auth } from "../../scripts/firebaseConfig"; // Ensure the correct path
+import { auth} from "../../scripts/firebaseConfig"; // Ensure the correct path
 import { onAuthStateChanged } from "firebase/auth";
+// import database from '@react-native-firebase/database';
+import axios from "axios";
 
 type InstructionsScreenProps = {
   navigation: NativeStackNavigationProp<any, any>;
@@ -10,12 +12,14 @@ type InstructionsScreenProps = {
 
 const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ navigation }) => {
   // Function to trigger the API
+  const [isLoading, setIsLoading] = useState(false);
   const triggerCheckElectrolytes = async () => {
     const user = auth.currentUser;
+   
 
     if (!user) {
       Alert.alert("Error", "User not authenticated. Please log in again.");
-      navigation.navigate("LoginScreen");
+      navigation.navigate("Login");
       return;
     }
 
@@ -42,6 +46,51 @@ const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ navigation }) =
     } catch (error: any) {
       Alert.alert("Error", `Failed to trigger API: ${error.message}`);
     }
+    setIsLoading(true);
+    try {
+      // Construct the Firebase path for the specific user
+      const userPath = `/users/${user.uid}/ecg_data/entries`;
+
+      // Fetch data from Firebase
+      // const snapshot = await database().ref(userPath).once('value');
+
+      // if (!snapshot.exists()) {
+      //   console.error('No ECG data found for the user in Firebase.');
+      //   setIsLoading(false);
+      //   return;
+      // }
+
+      // Retrieve the first entry for the user
+      // const entries = snapshot.val();
+      // const entryKey = Object.keys(entries)[0]; // Get the first key under entries
+      // const ecgData = entries[entryKey]?.ecg_value;
+
+      // if (!ecgData) {
+      //   console.error('No ECG data available for the user.');
+      //   setIsLoading(false);
+      //   return;
+      // }
+
+      // // Prepare data for the prediction API
+      const dataToSend = { user_id:userId };
+
+      // Call the prediction API
+      const response = await axios.post(
+        'https://cupnd89ium.us-east-1.awsapprunner.com/process-data',
+        dataToSend
+      );
+
+      const prediction = response.data.prediction.prediction_value;
+      console.log(prediction);
+      // Navigate to the Imbalance screen with the prediction value
+      navigation.navigate('Imbalance', { prediction });
+    } catch (error) {
+      console.error('Error retrieving data or fetching prediction:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  
+    
   };
   // Authorization: Ensure only authenticated users access this screen
   useEffect(() => {

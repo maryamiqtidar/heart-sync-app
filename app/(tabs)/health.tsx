@@ -1,10 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../../scripts/firebaseConfig"; 
 
-const HealthScreen = () => {
-  const navigation = useNavigation();
+type HealthProp= {
+  navigation: NativeStackNavigationProp<any, any>;
+};
 
+const HealthScreen : React.FC<HealthProp> = ({ navigation }) =>{
+ 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Redirect to LoginScreen if the user is not authenticated
+        navigation.navigate("Login");
+      }
+    });
+
+    return unsubscribe; // Cleanup the subscription on component unmount
+  }, [navigation]);
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -53,6 +68,9 @@ const HealthScreen = () => {
           <Text style={styles.symptoms}><Text style={styles.boldText}>Deficiency Symptoms:</Text> Muscle cramps, fatigue, irritability.</Text>
           <Text style={styles.symptoms}><Text style={styles.boldText}>Excess Symptoms:</Text> Low blood pressure, slowed breathing, irregular heartbeat.</Text>
         </View>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('InstructionsScreen')}>
+        <Text style={styles.buttonText}>Get Started</Text>
+      </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -91,6 +109,28 @@ const styles = StyleSheet.create({
     height: 20,
     resizeMode: 'contain',
   },
+  button: {
+    margin:'auto',
+    backgroundColor: '#D2341B',
+    width: '80%',
+    paddingVertical: 15,
+    borderRadius: 30,
+    alignItems: 'center',
+    // justifyContent:'center',
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+},
+
+buttonText: {
+  color: '#FFFFFF',
+  fontSize: 18,
+  fontFamily: 'poppins',
+  fontWeight: '600',
+},
 
   dropdownButton: {
     padding: 10,

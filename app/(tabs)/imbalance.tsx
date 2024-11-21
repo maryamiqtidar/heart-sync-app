@@ -1,9 +1,41 @@
 import React from 'react';
-import { View, Text,Image,  StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text,Image,  StyleSheet, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { auth} from "../../scripts/firebaseConfig"; 
+import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
 
-const ElectrolytesImbalanceScreen = () => {
-  const navigation = useNavigation();
+type Prediction = {
+  Calcium: 'High'|'Normal'|'Low';
+  Magnesium: 'High'|'Normal'|'Low';
+  Potassium: 'High'|'Normal'|'Low';
+};
+
+// Define the route parameter type
+type ImbalanceScreenParams = {
+  prediction: Prediction | null;
+};
+type ImbalanceScreenProps = {
+  navigation: NativeStackNavigationProp<any, any>;
+};
+
+const ElectrolytesImbalanceScreen : React.FC<ImbalanceScreenProps> = ({ navigation })=>{
+  
+  const user = auth.currentUser;
+   
+
+  if (!user) {
+    Alert.alert("Error", "User not authenticated. Please log in again.");
+    navigation.navigate("Login");
+    return;
+  }
+  
+  const route = useRoute<RouteProp<{ Imbalance: ImbalanceScreenParams }, 'Imbalance'>>();
+  const { prediction } = route.params || { prediction: null };
+  console.log(prediction);
+  const Calcium=prediction?.Calcium
+  const Potassium=prediction?.Potassium
+  const Magnesium=prediction?.Magnesium
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -22,19 +54,19 @@ const ElectrolytesImbalanceScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.card, styles.normal]}>
+      <View style={[styles.card,Potassium==='High'?styles.high:Potassium==='Normal'?styles.normal:styles.low]}>
         <Text style={styles.levelType}>Potassium Levels</Text>
-        <Text style={styles.levelStatusNormal}>Normal</Text>
+        <Text style={Potassium==='High'?styles.levelStatusHigh:Potassium==='Normal'?styles.levelStatusNormal:styles.levelStatusLow}>{Potassium}</Text>
       </View>
 
-      <View style={[styles.card, styles.low]}>
+      <View style={[styles.card,Calcium==='High'?styles.high:Calcium=='Normal'?styles.normal:styles.low]}>
         <Text style={styles.levelType}>Calcium Levels</Text>
-        <Text style={styles.levelStatusLow}>Low</Text>
+        <Text style={Calcium==='High'?styles.levelStatusHigh:Calcium==='Normal'?styles.levelStatusNormal:styles.levelStatusLow}>{Calcium}</Text>
       </View>
 
-      <View style={[styles.card, styles.high]}>
+      <View style={[styles.card,Magnesium==='High'?styles.high:Magnesium==='Normal'?styles.normal:styles.low]}>
         <Text style={styles.levelType}>Magnesium Levels</Text>
-        <Text style={styles.levelStatusHigh}>High</Text>
+        <Text style={Magnesium==='High'?styles.levelStatusHigh:Magnesium==='Normal'?styles.levelStatusNormal:styles.levelStatusLow}>{Magnesium}</Text>
       </View>
     </SafeAreaView>
   );
