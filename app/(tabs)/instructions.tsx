@@ -74,14 +74,14 @@ const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ navigation }) =
       // // Prepare data for the prediction API
       const dataToSend = { user_id:userId };
 
-      // Call the prediction API
+      // Call the prediction API using local since updated not deployed waiting on esp32 http server so will deploy everything 
       const response = await axios.post(
-        'https://cupnd89ium.us-east-1.awsapprunner.com/process-data',
+        'http://192.168.40.140:5000/process-data',
         dataToSend
       );
 
       const prediction = response.data.prediction.prediction_value;
-      console.log(prediction);
+      console.log(response.data);
       // Navigate to the Imbalance screen with the prediction value
       navigation.navigate('Imbalance', { prediction });
     } catch (error) {

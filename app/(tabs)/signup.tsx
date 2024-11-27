@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, KeyboardAvoidingView, TouchableWithoutFeedback, ScrollView, Keyboard, Platform } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { auth } from '../../scripts/firebaseConfig'; // Adjust path if needed
@@ -23,42 +23,59 @@ const SignUpScreen : React.FC<SignupScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={require('./images/heartbeat.png')}
-        style={styles.ecgImage}
-      />
-      <Text style={styles.title}>HEART SYNC</Text>
-      <Text style={styles.subtitle}>Detect electrolyte imbalances</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.select({
+        ios: 'padding',
+        android: 'height',
+        default: undefined, // Default for unsupported platforms
+      })}
+      // keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.container}>
+            <Image
+              source={require('./images/heartbeat.png')}
+              style={styles.ecgImage}
+            />
+            <Text style={styles.title}>HEART SYNC</Text>
+            <Text style={styles.subtitle}>Detect electrolyte imbalances</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        placeholderTextColor="#AAA"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#AAA"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#AAA"
-        secureTextEntry={true}
-        value={password}
-        onChangeText={setPassword}
-      />
+            <TextInput
+              style={styles.input}
+              placeholder="Username"
+              placeholderTextColor="#AAA"
+              value={username}
+              onChangeText={setUsername}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor="#AAA"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor="#AAA"
+              secureTextEntry={true}
+              value={password}
+              onChangeText={setPassword}
+            />
 
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Create an account</Text>
-      </TouchableOpacity>
-    </View>
+            <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+              <Text style={styles.buttonText}>Create an account</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

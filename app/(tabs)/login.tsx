@@ -7,6 +7,11 @@ import {
   StyleSheet,
   Image,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  ScrollView,
+  Keyboard,
 } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -37,55 +42,63 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   
 
   return (
-    <View style={styles.container}>
-      {/* Heartbeat image */}
-      <Image
-        source={require("./images/heartbeat.png")}
-        style={styles.ecgImage}
-      />
-      {/* Title */}
-      <Text style={styles.title}>HEART{"\n"}SYNC</Text>
-      {/* Subtitle */}
-      <Text style={styles.subtitle}>Detect electrolyte imbalances</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"} // Adjusts for all platforms
+      
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.container}>
+            {/* Image */}
+            <Image
+              source={require("./images/heartbeat.png")}
+              style={styles.ecgImage}
+            />
+            {/* Title */}
+            <Text style={styles.title}>HEART{"\n"}SYNC</Text>
+            {/* Subtitle */}
+            <Text style={styles.subtitle}>Detect electrolyte imbalances</Text>
 
-      {/* Email Input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#A9A9A9"
-        value={email}
-        onChangeText={setEmail} // Bind email input
-        keyboardType="email-address"
-      />
+            {/* Email Input */}
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor="#A9A9A9"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+            />
 
-      {/* Password Input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#A9A9A9"
-        value={password}
-        onChangeText={setPassword} // Bind password input
-        secureTextEntry
-      />
+            {/* Password Input */}
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor="#A9A9A9"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
 
-      {/* Login Button */}
-     {/* Login Button */}
-     <TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
-  <Text style={styles.signInButtonText}>Login</Text>
-</TouchableOpacity>
+            {/* Login Button */}
+            <TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
+              <Text style={styles.signInButtonText}>Login</Text>
+            </TouchableOpacity>
 
-
-
-      {/* Sign Up Navigation */}
-      {/* Sign Up Navigation */}
-<View style={styles.signUpSection}>
-  <Text style={styles.signUpText}>Don't have an account?</Text>
-  <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-    <Text style={styles.signUpLink}>Sign up</Text>
-  </TouchableOpacity>
-</View>
-
-    </View>
+            {/* Sign Up Navigation */}
+            <View style={styles.signUpSection}>
+              <Text style={styles.signUpText}>Don't have an account?</Text>
+              <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+                <Text style={styles.signUpLink}>Sign up</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 const styles = StyleSheet.create({
