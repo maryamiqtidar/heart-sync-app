@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { auth} from "../../scripts/firebaseConfig"; // Ensure the correct path
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 // import database from '@react-native-firebase/database';
 import axios from "axios";
 
@@ -103,6 +103,15 @@ const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ navigation }) =
 
     return unsubscribe; // Cleanup subscription on unmount
   }, [navigation]);
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigation.navigate("Welcome"); // Redirect to Welcome screen after logout
+    } catch (error) {
+      Alert.alert("Logout Failed", "An error occurred while logging out. Please try again.");
+      console.error("Logout Error: ", error);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -159,7 +168,7 @@ const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ navigation }) =
         </TouchableOpacity>
 
         {/* Right Button - Navigate to Welcome Screen */}
-        <TouchableOpacity onPress={() => navigation.navigate('welcome')}>
+        <TouchableOpacity onPress={handleLogout}>
           <Image source={require('./images/logout.png')} style={styles.icon} />
         </TouchableOpacity>
       </View>

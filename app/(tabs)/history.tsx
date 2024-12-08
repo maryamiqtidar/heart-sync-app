@@ -1,16 +1,41 @@
-import React from 'react';
-import { View, Text, Image , StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, Image , StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const HistoryScreen = () => {
+import { auth } from '@/scripts/firebaseConfig';
+import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
+import { onAuthStateChanged, signOut } from "firebase/auth";
+
+type HistoryProps = {
+  navigation: NativeStackNavigationProp<any, any>;
+};
+
+const HistoryScreen : React.FC<HistoryProps> = ({ navigation }) =>  {
   // Sample data for history records
   const historyData = [
     { date: '23/10/2024', time: '11:39', potassium: 'Normal', calcium: 'High', magnesium: 'Low' },
     { date: '23/10/2024', time: '22:21', potassium: 'High', calcium: 'High', magnesium: 'Normal' },
     
   ];
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Redirect to LoginScreen if the user is not authenticated
+        navigation.navigate("Login");
+      }
+    });
 
-  const navigation = useNavigation();
+    return unsubscribe; // Cleanup subscription on unmount
+  }, [navigation]);
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigation.navigate("Welcome"); // Redirect to Welcome screen after logout
+    } catch (error) {
+      Alert.alert("Logout Failed", "An error occurred while logging out. Please try again.");
+      console.error("Logout Error: ", error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -59,12 +84,12 @@ const HistoryScreen = () => {
 
       <View style={styles.footer}>
         {/* Left Button - Navigate to History Screen */}
-        <TouchableOpacity onPress={() => navigation.navigate('history')}>
+        <TouchableOpacity onPress={() => navigation.navigate('History')}>
           <Image source={require('./images/history.png')} style={styles.icon}  />
         </TouchableOpacity>
 
         {/* Right Button - Navigate to Welcome Screen */}
-        <TouchableOpacity onPress={() => navigation.navigate('welcome')}>
+        <TouchableOpacity onPress={handleLogout}>
           <Image source={require('./images/logout.png')} style={styles.icon} />
         </TouchableOpacity>
       </View>
