@@ -24,7 +24,8 @@ const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ navigation }) =
     }
 
     const userId = user.uid; // Retrieve the UID from Firebase Authentication
-    const apiUrl = "https://cupnd89ium.us-east-1.awsapprunner.com/trigger";
+    //HTTP server will be here
+    const apiUrl = "http://ec2-54-146-247-46.compute-1.amazonaws.com/trigger";
 
     try {
       const response = await fetch(apiUrl, {
@@ -76,7 +77,7 @@ const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ navigation }) =
 
       // Call the prediction API using local since updated not deployed waiting on esp32 http server so will deploy everything 
       const response = await axios.post(
-        'http://192.168.40.140:5000/process-data',
+        'http://ec2-54-146-247-46.compute-1.amazonaws.com/process-data',
         dataToSend
       );
 
@@ -163,7 +164,7 @@ const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ navigation }) =
       {/* Footer */}
       <View style={styles.footer}>
         {/* Left Button - Navigate to History Screen */}
-        <TouchableOpacity onPress={() => navigation.navigate('history')}>
+        <TouchableOpacity onPress={() => navigation.navigate('History')}>
           <Image source={require('./images/history.png')} style={styles.icon}  />
         </TouchableOpacity>
 

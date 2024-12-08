@@ -61,9 +61,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
         <TouchableOpacity onPress={handleLogout}>
           <Image source={require('./images/logout.png')} style={styles.icon} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Imbalance')}>
+        {/* <TouchableOpacity onPress={() => navigation.navigate('Imbalance')}>
           <Image source={require('./images/electrlytes.png')} style={styles.icon} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );

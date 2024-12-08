@@ -1,32 +1,72 @@
-import React, { useEffect } from 'react';
-import { View, Text, Image , StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { auth } from '@/scripts/firebaseConfig';
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
+interface HistoryItem {
+  date: string;
+  time: string;
+  "K+": string;
+  "Ca+": string;
+  "Mg+": string;
+}
+
 type HistoryProps = {
   navigation: NativeStackNavigationProp<any, any>;
 };
 
-const HistoryScreen : React.FC<HistoryProps> = ({ navigation }) =>  {
-  // Sample data for history records
-  const historyData = [
-    { date: '23/10/2024', time: '11:39', potassium: 'Normal', calcium: 'High', magnesium: 'Low' },
-    { date: '23/10/2024', time: '22:21', potassium: 'High', calcium: 'High', magnesium: 'Normal' },
-    
-  ];
+const HistoryScreen: React.FC<HistoryProps> = ({ navigation }) => {
+  const [historyData, setHistoryData] = useState<HistoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
-        // Redirect to LoginScreen if the user is not authenticated
-        navigation.navigate("Login");
+        navigation.navigate("Login"); // Redirect to LoginScreen if the user is not authenticated
       }
     });
 
     return unsubscribe; // Cleanup subscription on unmount
   }, [navigation]);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const userId = auth.currentUser?.uid;
+        if (!userId) {
+          Alert.alert("Error", "User ID is missing.");
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(`http://192.168.40.140:5000/history?user_id=${userId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setHistoryData(data.prediction || []);
+        } else {
+          Alert.alert("Error", data.message || "Failed to fetch history.");
+        }
+      } catch (error) {
+        console.error("Error fetching history:", error);
+        Alert.alert("Error", "An error occurred while fetching history.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, []);
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -37,19 +77,24 @@ const HistoryScreen : React.FC<HistoryProps> = ({ navigation }) =>  {
     }
   };
 
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-       <View style={styles.header}>
-        {/* Back Button on the Left */}
+      <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Image source={require('./images/back.png')} style={styles.backIcon} />
         </TouchableOpacity>
 
-        {/* Title in the center */}
         <Text style={styles.title}>History</Text>
 
-        {/* Dropdown Button on the Right */}
-        <TouchableOpacity onPress={() => {/* Add dropdown functionality here */}} style={styles.dropdownButton}>
+        <TouchableOpacity onPress={() => handleLogout()} style={styles.dropdownButton}>
           <Image source={require('./images/user.png')} style={styles.dropdown} />
         </TouchableOpacity>
       </View>
@@ -68,34 +113,27 @@ const HistoryScreen : React.FC<HistoryProps> = ({ navigation }) =>  {
             <View key={index} style={styles.tableRow}>
               <Text style={styles.tableCell}>{item.date}</Text>
               <Text style={styles.tableCell}>{item.time}</Text>
-              <Text style={[styles.tableCell, item.potassium === 'Normal' ? styles.normal : styles.high]}>
-                {item.potassium}
+              <Text style={[styles.tableCell, item["K+"] === 'Normal' ? styles.normal : styles.high]}>
+                {item["K+"]}
               </Text>
-              <Text style={[styles.tableCell, item.calcium === 'Normal' ? styles.normal : styles.high]}>
-                {item.calcium}
+              <Text style={[styles.tableCell, item["Ca+"] === 'Normal' ? styles.normal : styles.high]}>
+                {item["Ca+"]}
               </Text>
-              <Text style={[styles.tableCell, item.magnesium === 'Normal' ? styles.normal : styles.low]}>
-                {item.magnesium}
+              <Text style={[styles.tableCell, item["Mg+"] === 'Normal' ? styles.normal : styles.low]}>
+                {item["Mg+"]}
               </Text>
             </View>
           ))}
         </ScrollView>
       </View>
-
-      <View style={styles.footer}>
-        {/* Left Button - Navigate to History Screen */}
-        <TouchableOpacity onPress={() => navigation.navigate('History')}>
-          <Image source={require('./images/history.png')} style={styles.icon}  />
-        </TouchableOpacity>
-
-        {/* Right Button - Navigate to Welcome Screen */}
-        <TouchableOpacity onPress={handleLogout}>
-          <Image source={require('./images/logout.png')} style={styles.icon} />
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 };
+
+
+ 
+   
+
 
 const styles = StyleSheet.create({
   container: {
