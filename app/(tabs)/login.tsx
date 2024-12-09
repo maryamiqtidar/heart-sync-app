@@ -31,7 +31,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const handleLogin = async () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      Alert.alert("Success", `Welcome back, ${userCredential.user.email}!`);
+      Alert.alert(" Login Successful", `for, ${userCredential.user.email}!`);
       
       // Navigate to ProfileScreen after successful login
       navigation.navigate("ProfileScreen");

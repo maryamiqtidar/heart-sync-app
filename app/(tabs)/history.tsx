@@ -42,7 +42,7 @@ const HistoryScreen: React.FC<HistoryProps> = ({ navigation }) => {
           return;
         }
 
-        const response = await fetch(`http://192.168.40.140:5000/history?user_id=${userId}`, {
+        const response = await fetch(`http://ec2-54-146-247-46.compute-1.amazonaws.com/history?user_id=${userId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

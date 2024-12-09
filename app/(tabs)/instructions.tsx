@@ -39,7 +39,7 @@ const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ navigation }) =
       });
 
       if (response.ok) {
-        Alert.alert("Success", "Check Electrolytes triggered successfully!");
+        Alert.alert("Results are Available Now");
       } else {
         const errorData = await response.json();
         Alert.alert("Error", `Failed to trigger: ${errorData.message}`);
