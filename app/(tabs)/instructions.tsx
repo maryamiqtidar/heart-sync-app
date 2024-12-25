@@ -25,28 +25,34 @@ const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ navigation }) =
 
     const userId = user.uid; // Retrieve the UID from Firebase Authentication
     //HTTP server will be here
+    //const response = await fetch("http://192.168.0.72/ecg", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ user_id: user.uid }),
+//     });
     const apiUrl = "http://ec2-54-146-247-46.compute-1.amazonaws.com/trigger";
 
-    try {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: userId, // Send user_id in the request body
-        }),
-      });
+    Alert.alert("Checking Electrolyte",'Stay Still!');
+    // try {
+    //   const response = await fetch(apiUrl, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //       user_id: userId, // Send user_id in the request body
+    //     }),
+    //   });
 
-      if (response.ok) {
-        Alert.alert("Results are Available Now");
-      } else {
-        const errorData = await response.json();
-        Alert.alert("Error", `Failed to trigger: ${errorData.message}`);
-      }
-    } catch (error: any) {
-      Alert.alert("Error", `Failed to trigger API: ${error.message}`);
-    }
+    //   if (response.ok) {
+    //     Alert.alert("Results are Available Now");
+    //   } else {
+    //     const errorData = await response.json();
+    //     Alert.alert("Error", `Failed to trigger: ${errorData.message}`);
+    //   }
+    // } catch (error: any) {
+    //   Alert.alert("Error", `Failed to trigger API: ${error.message}`);
+    // }
     setIsLoading(true);
     try {
       // Construct the Firebase path for the specific user

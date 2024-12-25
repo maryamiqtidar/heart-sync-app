@@ -18,7 +18,7 @@ const SignUpScreen : React.FC<SignupScreenProps> = ({ navigation }) => {
       Alert.alert('Success', `User registered: ${userCredential.user.email}`);
       navigation.navigate("Login");
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      Alert.alert('Error','Email already exists');
     }
   };
 
