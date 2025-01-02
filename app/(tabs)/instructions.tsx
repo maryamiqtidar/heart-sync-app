@@ -25,14 +25,14 @@ const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ navigation }) =
 
     const userId = user.uid; // Retrieve the UID from Firebase Authentication
     //HTTP server will be here
-    //const response = await fetch("http://192.168.0.72/ecg", {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ user_id: user.uid }),
-//     });
-    const apiUrl = "http://ec2-54-146-247-46.compute-1.amazonaws.com/trigger";
+    const response = await fetch("http://192.168.0.72/ecg", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: user.uid }),
+    });
+    // const apiUrl = "http://ec2-54-146-247-46.compute-1.amazonaws.com/trigger";
 
-    Alert.alert("Checking Electrolyte",'Stay Still!');
+    Alert.alert("Checking Electrolytes",'Stay Still!');
     // try {
     //   const response = await fetch(apiUrl, {
     //     method: "POST",
