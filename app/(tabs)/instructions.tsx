@@ -32,7 +32,7 @@ const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ navigation }) =
     });
     // const apiUrl = "http://ec2-54-146-247-46.compute-1.amazonaws.com/trigger";
 
-    Alert.alert("Checking Electrolytes",'Stay Still!');
+    // Alert.alert("Checking Electrolytes",'Stay Still!');
     // try {
     //   const response = await fetch(apiUrl, {
     //     method: "POST",

@@ -5,9 +5,9 @@ import { auth} from "../../scripts/firebaseConfig";
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
 
 type Prediction = {
-  Calcium: 'High'|'Normal'|'Low';
-  Magnesium: 'High'|'Normal'|'Low';
-  Potassium: 'High'|'Normal'|'Low';
+  Calcium: any
+  Magnesium: any
+  Potassium: any
 };
 
 // Define the route parameter type
@@ -54,19 +54,34 @@ const ElectrolytesImbalanceScreen : React.FC<ImbalanceScreenProps> = ({ navigati
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.card,Potassium==='High'?styles.high:Potassium==='Normal'?styles.normal:styles.low]}>
-        <Text style={styles.levelType}>Potassium Levels</Text>
-        <Text style={Potassium==='High'?styles.levelStatusHigh:Potassium==='Normal'?styles.levelStatusNormal:styles.levelStatusLow}>{Potassium}</Text>
+      <View style={[styles.card,Potassium.classification==='High'?styles.high:Potassium.classification==='Normal'?styles.normal:styles.low]}>
+        <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Text style={styles.levelType}>Potassium Levels</Text>
+          <Text style={Potassium.classification=='High'?styles.levelStatusHigh:Potassium.classification==='Normal'?styles.levelStatusNormal:styles.levelStatusLow}>{Potassium.classification}</Text>
+        </View>
+        <View>
+          <Text style={[Potassium.classification=='High'?styles.levelStatusHigh:Potassium.classification==='Normal'?styles.levelStatusNormal:styles.levelStatusLow, { textAlign: 'right', fontSize:50 }]}>{Potassium.labvalue}</Text>
+        </View>
       </View>
 
-      <View style={[styles.card,Calcium==='High'?styles.high:Calcium=='Normal'?styles.normal:styles.low]}>
-        <Text style={styles.levelType}>Calcium Levels</Text>
-        <Text style={Calcium==='High'?styles.levelStatusHigh:Calcium==='Normal'?styles.levelStatusNormal:styles.levelStatusLow}>{Calcium}</Text>
+      <View style={[styles.card,Calcium.classification==='High'?styles.high:Calcium.classification=='Normal'?styles.normal:styles.low]}>
+        <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Text style={styles.levelType}>Calcium Levels</Text>
+          <Text style={Calcium.classification==='High'?styles.levelStatusHigh:Calcium.classification==='Normal'?styles.levelStatusNormal:styles.levelStatusLow}>{Calcium.classification}</Text>
+        </View>
+        <View>
+          <Text style={[Calcium.classification==='High'?styles.levelStatusHigh:Calcium.classification==='Normal'?styles.levelStatusNormal:styles.levelStatusLow, { textAlign: 'right', fontSize:50 }]}>{Calcium.labvalue}</Text>
+        </View>
       </View>
 
-      <View style={[styles.card,Magnesium==='High'?styles.high:Magnesium==='Normal'?styles.normal:styles.low]}>
-        <Text style={styles.levelType}>Magnesium Levels</Text>
-        <Text style={Magnesium==='High'?styles.levelStatusHigh:Magnesium==='Normal'?styles.levelStatusNormal:styles.levelStatusLow}>{Magnesium}</Text>
+      <View style={[styles.card,Magnesium.classification==='High'?styles.high:Magnesium.classification==='Normal'?styles.normal:styles.low]}>
+        <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Text style={styles.levelType}>Magnesium Levels</Text>
+          <Text style={Magnesium.classification==='High'?styles.levelStatusHigh:Magnesium.classification==='Normal'?styles.levelStatusNormal:styles.levelStatusLow}>{Magnesium.classification}</Text>
+        </View>
+        <View>
+          <Text style={[Magnesium.classification==='High'?styles.levelStatusHigh:Magnesium.classification==='Normal'?styles.levelStatusNormal:styles.levelStatusLow, { textAlign: 'right', fontSize:50 }]}>{Magnesium.labvalue}</Text>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -112,6 +127,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginBottom: 14,
     margin: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   },
   normal: {
     backgroundColor: '#d3eedd',

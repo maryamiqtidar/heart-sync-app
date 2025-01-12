@@ -6,16 +6,23 @@ import { auth } from '@/scripts/firebaseConfig';
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
+
 interface HistoryItem {
   date: string;
   time: string;
-  "K+": string;
-  "Ca+": string;
-  "Mg+": string;
+  "K+": number;
+  "Ca+": number;
+  "Mg+": number;
 }
 
 type HistoryProps = {
   navigation: NativeStackNavigationProp<any, any>;
+};
+
+const electrolyteRanges = {
+  Potassium: { low: 3.5, high: 5.0 },
+  Calcium: { low: 8.5, high: 10.5 },
+  Magnesium: { low: 1.5, high: 2.5 },
 };
 
 const HistoryScreen: React.FC<HistoryProps> = ({ navigation }) => {
@@ -25,7 +32,7 @@ const HistoryScreen: React.FC<HistoryProps> = ({ navigation }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
-        navigation.navigate("Login"); // Redirect to LoginScreen if the user is not authenticated
+        navigation.navigate('Login'); // Redirect to LoginScreen if the user is not authenticated
       }
     });
 
@@ -37,28 +44,32 @@ const HistoryScreen: React.FC<HistoryProps> = ({ navigation }) => {
       try {
         const userId = auth.currentUser?.uid;
         if (!userId) {
-          Alert.alert("Error", "User ID is missing.");
+          Alert.alert('Error', 'User ID is missing.');
           setLoading(false);
           return;
         }
 
-        const response = await fetch(`http://ec2-54-146-247-46.compute-1.amazonaws.com/history?user_id=${userId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await fetch(
+          `http://192.168.40.140:5000/history?user_id=${userId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
 
         const data = await response.json();
+        console.log(data)
 
         if (response.ok) {
           setHistoryData(data.prediction || []);
         } else {
-          Alert.alert("Error", data.message || "Failed to fetch history.");
+          Alert.alert('Error', data.message || 'Failed to fetch history.');
         }
       } catch (error) {
-        console.error("Error fetching history:", error);
-        Alert.alert("Error", "An error occurred while fetching history.");
+        console.error('Error fetching history:', error);
+        Alert.alert('Error', 'An error occurred while fetching history.');
       } finally {
         setLoading(false);
       }
@@ -70,11 +81,17 @@ const HistoryScreen: React.FC<HistoryProps> = ({ navigation }) => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      navigation.navigate("Welcome"); // Redirect to Welcome screen after logout
+      navigation.navigate('Welcome'); // Redirect to Welcome screen after logout
     } catch (error) {
-      Alert.alert("Logout Failed", "An error occurred while logging out. Please try again.");
-      console.error("Logout Error: ", error);
+      Alert.alert('Logout Failed', 'An error occurred while logging out. Please try again.');
+      console.error('Logout Error: ', error);
     }
+  };
+
+  const getStyleForValue = (value: number, range: { low: number; high: number }) => {
+    if (value < range.low) return styles.low;
+    if (value > range.high) return styles.high;
+    return styles.normal;
   };
 
   if (loading) {
@@ -105,7 +122,7 @@ const HistoryScreen: React.FC<HistoryProps> = ({ navigation }) => {
           <Text style={styles.tableHeaderText}>Time</Text>
           <Text style={styles.tableHeaderText}>K+</Text>
           <Text style={styles.tableHeaderText}>Ca+</Text>
-          <Text style={styles.tableHeaderText}>Mg</Text>
+          <Text style={styles.tableHeaderText}>Mg+</Text>
         </View>
 
         <ScrollView>
@@ -113,13 +130,28 @@ const HistoryScreen: React.FC<HistoryProps> = ({ navigation }) => {
             <View key={index} style={styles.tableRow}>
               <Text style={styles.tableCell}>{item.date}</Text>
               <Text style={styles.tableCell}>{item.time}</Text>
-              <Text style={[styles.tableCell, item["K+"] === 'Normal' ? styles.normal : styles.high]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  getStyleForValue(item["K+"], electrolyteRanges.Potassium),
+                ]}
+              >
                 {item["K+"]}
               </Text>
-              <Text style={[styles.tableCell, item["Ca+"] === 'Normal' ? styles.normal : styles.high]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  getStyleForValue(item["Ca+"], electrolyteRanges.Calcium),
+                ]}
+              >
                 {item["Ca+"]}
               </Text>
-              <Text style={[styles.tableCell, item["Mg+"] === 'Normal' ? styles.normal : styles.low]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  getStyleForValue(item["Mg+"], electrolyteRanges.Magnesium),
+                ]}
+              >
                 {item["Mg+"]}
               </Text>
             </View>
@@ -129,7 +161,6 @@ const HistoryScreen: React.FC<HistoryProps> = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
 
  
    
